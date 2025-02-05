@@ -211,7 +211,7 @@ public class WebSocketImpl implements WebSocket {
    */
   public void decode(ByteBuffer socketBuffer) {
     assert (socketBuffer.hasRemaining());
-    System.out.println("decode");
+    //System.out.println("decode");
     if (readyState != ReadyState.NOT_YET_CONNECTED) {
       if (readyState == ReadyState.OPEN) {
         decodeFrames(socketBuffer);
@@ -263,7 +263,7 @@ public class WebSocketImpl implements WebSocket {
                 socketBuffer.reset();
                 Handshakedata tmphandshake = d.translateHandshake(socketBuffer);
                 if (!(tmphandshake instanceof ClientHandshake)) {
-                  System.out.println("Closing due to wrong handshake");
+                  //System.out.println("Closing due to wrong handshake");
                   closeConnectionDueToWrongHandshake(
                       new InvalidDataException(CloseFrame.PROTOCOL_ERROR, "wrong http function"));
                   return false;
@@ -276,11 +276,11 @@ public class WebSocketImpl implements WebSocket {
                   try {
                     response = wsl.onWebsocketHandshakeReceivedAsServer(this, d, handshake);
                   } catch (InvalidDataException e) {
-                    System.out.println("Closing due to invalid data exception");
+                    //System.out.println("Closing due to invalid data exception");
                     closeConnectionDueToWrongHandshake(e);
                     return false;
                   } catch (RuntimeException e) {
-                    System.out.println("Closing due to internal server error");
+                    //System.out.println("Closing due to internal server error");
                     wsl.onWebsocketError(this, e);
                     closeConnectionDueToInternalServerError(e);
                     return false;
@@ -296,7 +296,7 @@ public class WebSocketImpl implements WebSocket {
               }
             }
             if (draft == null) {
-              System.out.println("Closing due to protocol error: no draft matches");
+              //System.out.println("Closing due to protocol error: no draft matches");
               closeConnectionDueToWrongHandshake(
                   new InvalidDataException(CloseFrame.PROTOCOL_ERROR, "no draft matches"));
             }
@@ -305,7 +305,7 @@ public class WebSocketImpl implements WebSocket {
             // special case for multiple step handshakes
             Handshakedata tmphandshake = draft.translateHandshake(socketBuffer);
             if (!(tmphandshake instanceof ClientHandshake)) {
-              System.out.println("Closing due to wrong handshake");
+              //System.out.println("Closing due to wrong handshake");
               flushAndClose(CloseFrame.PROTOCOL_ERROR, "wrong http function", false);
               return false;
             }
@@ -316,7 +316,7 @@ public class WebSocketImpl implements WebSocket {
               open(handshake);
               return true;
             } else {
-              System.out.println("Closing due to protocol error: the handshake did finally not match");
+              //System.out.println("Closing due to protocol error: the handshake did finally not match");
               close(CloseFrame.PROTOCOL_ERROR, "the handshake did finally not match");
             }
             return false;
@@ -325,7 +325,7 @@ public class WebSocketImpl implements WebSocket {
           draft.setParseMode(role);
           Handshakedata tmphandshake = draft.translateHandshake(socketBuffer);
           if (!(tmphandshake instanceof ServerHandshake)) {
-            System.out.println("Closing due to wrong handshake");
+            //System.out.println("Closing due to wrong handshake");
             flushAndClose(CloseFrame.PROTOCOL_ERROR, "wrong http function", false);
             return false;
           }
@@ -335,11 +335,11 @@ public class WebSocketImpl implements WebSocket {
             try {
               wsl.onWebsocketHandshakeReceivedAsClient(this, handshakerequest, handshake);
             } catch (InvalidDataException e) {
-              System.out.println("Closing due to invalid data exception");
+              //System.out.println("Closing due to invalid data exception");
               flushAndClose(e.getCloseCode(), e.getMessage(), false);
               return false;
             } catch (RuntimeException e) {
-              System.out.println("Closing due to internal server error");
+              //System.out.println("Closing due to internal server error");
               wsl.onWebsocketError(this, e);
               flushAndClose(CloseFrame.NEVER_CONNECTED, e.getMessage(), false);
               return false;
@@ -347,12 +347,12 @@ public class WebSocketImpl implements WebSocket {
             open(handshake);
             return true;
           } else {
-            System.out.println("Closing due to protocol error: draft " + draft + " refuses handshake");
+            //System.out.println("Closing due to protocol error: draft " + draft + " refuses handshake");
             close(CloseFrame.PROTOCOL_ERROR, "draft " + draft + " refuses handshake");
           }
         }
       } catch (InvalidHandshakeException e) {
-        System.out.println("Closing due to invalid handshake");
+        //System.out.println("Closing due to invalid handshake");
         close(e);
       }
     } catch (IncompleteHandshakeException e) {
@@ -381,24 +381,24 @@ public class WebSocketImpl implements WebSocket {
     try {
       frames = draft.translateFrame(socketBuffer);
       for (Framedata f : frames) {
-        System.out.println("Decoded frame: " + f);
+        //System.out.println("Decoded frame: " + f);
         draft.processFrame(this, f);
       }
     } catch (LimitExceededException e) {
       if (e.getLimit() == Integer.MAX_VALUE) {
-        System.out.println("Closing due to limit exceeded");
+        //System.out.println("Closing due to limit exceeded");
         wsl.onWebsocketError(this, e);
       }
       close(e);
     } catch (InvalidDataException e) {
-      System.out.println("Closing due to invalid data exception");
+      //System.out.println("Closing due to invalid data exception");
       wsl.onWebsocketError(this, e);
       close(e);
     } catch (VirtualMachineError | ThreadDeath | LinkageError e) {
-      System.out.println("Closing due to fatal error");
+      //System.out.println("Closing due to fatal error");
       throw e;
     } catch (Error e) {
-      System.out.println("Closing due to error");
+      //System.out.println("Closing due to error");
       Exception exception = new Exception(e);
       wsl.onWebsocketError(this, exception);
       String errorMessage = "Got error " + e.getClass().getName();
@@ -474,7 +474,7 @@ public class WebSocketImpl implements WebSocket {
               sendFrame(closeFrame);
             }
           } catch (InvalidDataException e) {
-            System.out.println("Closing due to invalid data exception");
+            //System.out.println("Closing due to invalid data exception");
             wsl.onWebsocketError(this, e);
             flushAndClose(CloseFrame.ABNORMAL_CLOSE, "generated frame is invalid", false);
           }
@@ -534,9 +534,9 @@ public class WebSocketImpl implements WebSocket {
         channel.close();
       } catch (IOException e) {
         if (e.getMessage() != null && e.getMessage().equals("Broken pipe")) {
-          System.out.println("Caught IOException: Broken pipe during closeConnection()");
+          //System.out.println("Caught IOException: Broken pipe during closeConnection()");
         } else {
-          System.out.println("Exception during channel.close()");
+          //System.out.println("Exception during channel.close()");
           wsl.onWebsocketError(this, e);
         }
       }
@@ -584,7 +584,7 @@ public class WebSocketImpl implements WebSocket {
     try {
       wsl.onWebsocketClosing(this, code, message, remote);
     } catch (RuntimeException e) {
-      System.out.println("Exception in onWebsocketClosing");
+      //System.out.println("Exception in onWebsocketClosing");
       wsl.onWebsocketError(this, e);
     }
     if (draft != null) {
@@ -661,7 +661,7 @@ public class WebSocketImpl implements WebSocket {
     }
     ArrayList<ByteBuffer> outgoingFrames = new ArrayList<>();
     for (Framedata f : frames) {
-      System.out.println("send frame: " + f);
+      //System.out.println("send frame: " + f);
       outgoingFrames.add(draft.createBinaryFrame(f));
     }
     write(outgoingFrames);
@@ -712,7 +712,7 @@ public class WebSocketImpl implements WebSocket {
       // Stop if the client code throws an exception
       throw new InvalidHandshakeException("Handshake data rejected by client.");
     } catch (RuntimeException e) {
-      System.out.println("Exception in startHandshake");
+      //System.out.println("Exception in startHandshake");
       wsl.onWebsocketError(this, e);
       throw new InvalidHandshakeException("rejected because of " + e);
     }
@@ -740,7 +740,7 @@ public class WebSocketImpl implements WebSocket {
   }
 
   private void open(Handshakedata d) {
-    System.out.println("open using draft: " + draft);
+    //System.out.println("open using draft: " + draft);
     readyState = ReadyState.OPEN;
     updateLastPong();
     try {
