@@ -292,7 +292,7 @@ public abstract class Draft {
       bytebuffer.put(content);
     }
     bytebuffer.flip();
-    return Collections.singletonList(bytebuffer);
+    return Collections.singletonList((ByteBuffer) bytebuffer);
   }
 
   public abstract ClientHandshakeBuilder postProcessHandshakeRequestAsClient(
