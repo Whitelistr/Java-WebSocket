@@ -1,5 +1,10 @@
-Java WebSockets
-===============
+# What we changed?
+- Removed SLF4J From code
+
+# Original Readme:
+
+## Java WebSockets
+
 [![Javadocs](https://www.javadoc.io/badge/org.java-websocket/Java-WebSocket.svg)](https://www.javadoc.io/doc/org.java-websocket/Java-WebSocket)
 [![Maven Central](https://img.shields.io/maven-central/v/org.java-websocket/Java-WebSocket.svg)](https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket)
 
